@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>base64-32页面</title>
+    <style>
+        .all {
+            /* width: 700px; */
+            height: 300px;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-radius: 20px;
+        }
+
+        .all h1 {
+            color: #767676;
+            font-size: 20px;
+        }
+
+        .all div button {
+            width: 120px;
+            height: 30px;
+            background-color: #106ebe;
+            border: none;
+            color: white;
+            border-radius: 20px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .all textarea {
+            /* width: 600px; */
+            height: 150px;
+            padding: 8px 11px;
+        }
+
+        textarea {
+            resize: none;
+            padding: 5px 11px;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="all">
+        <h1>编码器解码器</h1>
+        <div>
+            <button>Base64</button>
+            <button>Base32</button>
+            <button>Base64</button>
+        </div>
+        <textarea name="" id="textValue" placeholder="在此处键入或粘贴内容" maxlength="5"></textarea>
+        <div>
+            <button onclick="encodingTextareaInput()">编码</button>
+            <button onclick="decodingTextareaInput()">解码</button>
+            <button onclick="ten_two()">10-2</button>
+            <button onclick="two_ten()">2-10</button>
+        </div>
+        <div style="background-color: #f9f9f9;">工具使用 UTF-8 字符集。</div>
+    </div>
+
+    <script>
+        function base64(str) {
+            var arr = [];
+            var base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+            var res = ''
+            for (var i = 0; i < str.length; i++) {
+                arr.push(str[i].charCodeAt().toString(2).replace(/^/, '0000000').slice(-8));
+            }
+            var bin = arr.join('');
+            bin = arr.join('') + ("0").repeat(6 - (bin.length % 6));
+            var b = bin.match(/[01]{6}/g)
+            for (var j = 0; j < b.length; j++) {
+                var index = parseInt(b[j], 2)
+                res += base64[index]
+            }
+            res = res + ("=").repeat(4 - res.length % 4);
+            return res;
+        }
+        console.log(base64("Java"))
+
+
+        function base64Return(str) {
+            var sum=0;
+            var arr=[];
+            var kong='';
+            var base64Return = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+            for(var i=str.length;i>=0;i--){
+                if(str[i]=="="){
+                    sum++
+                }
+            }
+            console.log(sum)
+            str=str.slice(0,str.length-sum)
+            console.log(str);
+            for(var j=0;j<str.length;j++){
+                // console.log(base64Return.indexOf(str[j]))
+                var a=base64Return.indexOf(str[j])
+                console.log(a.toString(2).replace(/^/, '00000').slice(-6))
+                var b=a.toString(2).replace(/^/, '00000').slice(-6);
+                kong=kong+b;
+                // b=''+b;
+                // arr.push(b);
+                
+                // console.log(base64Return[str[j]])
+                // console.log(arr)
+            }
+            // console.log(b);
+            console.log(kong);
+            console.log(Math.floor(kong.length/8))
+            for(var k=0;k<Math.floor(kong.length/8);k++){
+                // arr.push(kong.slice(k*8,(k+1)*8));
+                // arr.push(parseInt(kong.slice(k*8,(k+1)*8),2));
+                arr.push(String.fromCharCode(parseInt(kong.slice(k*8,(k+1)*8),2)));
+            }
+            // console.log(kong.slice(0,8));
+            // console.log(arr.push(kong.slice(0,8)));
+            console.log(arr);
+            return arr.join('');
+        }
+        console.log(base64Return("SmF2YQ=="));
+
+        function encodingTextareaInput() {
+            const textarea = document.getElementById('textValue');
+            const inputValue = textarea.value;
+            console.log('Textarea input:', inputValue);
+
+            var result = base64(inputValue);
+            console.log(result);
+            textarea.value = result;
+        }
+        function decodingTextareaInput() {
+            const textarea = document.getElementById('textValue');
+            const inputValue = textarea.value;
+            console.log('Textarea input:', inputValue);
+
+            var result = base64Return(inputValue);
+            console.log(result);
+            textarea.value = result;
+        }
+
+
+
+
+
+
+
+        function decimalToBinary(decimal) {
+            if (decimal === 0) {
+                return '0';
+            }
+            let binary = '';
+            let number = decimal;
+            while (number > 0) {
+                binary = (number % 2) + binary; // 取余数并添加到结果字符串的前面
+                number = Math.floor(number / 2); // 整数除法，丢弃余数
+            }
+            return binary;
+        }
+        let decimalNumber = 10;
+        let binaryString = decimalToBinary(decimalNumber);
+        console.log(binaryString);
+
+        function ten_two() {
+            const textarea = document.getElementById('textValue');
+            const inputValue = textarea.value;
+            console.log('Textarea input:', inputValue);
+
+            var result = decimalToBinary(inputValue);
+            console.log(result);
+            textarea.value = result;
+        }
+
+
+        function binaryToDecimalManual(binary) {
+            let decimal = 0;
+            let power = 0;
+            let length = binary.length;
+            for (let i = length - 1; i >= 0; i--) {
+                let bit = binary.charAt(i);
+                let bitValue = bit - '0';
+                decimal += bitValue * Math.pow(2, power);
+                power++;
+            }
+            return decimal;
+        }
+        let binaryNumber = '1010';
+        // let decimalNumber = binaryToDecimalManual(binaryNumber);
+        console.log(decimalNumber);
+
+        function two_ten() {
+            const textarea = document.getElementById('textValue');
+            const inputValue = textarea.value;
+            console.log('Textarea input:', inputValue);
+
+            var result = binaryToDecimalManual(inputValue);
+            console.log(result);
+            textarea.value = result;
+        }
+    </script>
+</body>
+
+</html>
